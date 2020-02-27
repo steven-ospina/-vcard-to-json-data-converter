@@ -1,1 +1,1 @@
-# -vcard-to-json-data-converter
+# vcard-to-json-data-converter

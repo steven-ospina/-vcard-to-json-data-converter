@@ -1,0 +1,244 @@
+def run():
+
+    datos = []
+
+    with open('00001.vcf', 'r', encoding="utf-8") as f:
+        # texto_en_lista = f.readlines()
+        # leer_archivo = f.read()
+        # # print(len(texto_en_lista))
+        # print(leer_archivo)
+        for idx, data in f.readlines():
+            print(idx)
+
+if __name__ == '__main__':
+    run()
+
+
+    # for data in array:
+    #     datos.append(data)
+
+    # print(array)
+    # parseo = str(datos[1])
+    # print(parseo)
+    # print(type(array))
+    # for data in range(len(array)):
+    #     print(data, array[data])
+
+
+
+#########################
+
+def run():
+
+    datos_cortos = []
+    sin_salto = []
+
+    with open('00001.vcf', 'r', encoding="utf-8") as f:
+        array = f.readlines()
+        
+        for i in range(0, len(array)):
+            sin_salto.append(array[i].rstrip('\n'))
+            # print(sin_salto[i])
+            if sin_salto[i] == 'FN:1':
+                dato = sin_salto[i].split(':')
+                print('encontrado\n')
+    
+    for data in range(1, 5 + 1):
+        print(data, array[data])
+        datos_cortos.append(array[data].rstrip('\n'))
+
+    try:
+        print(f'dato {sin_salto[25857]}')
+        print(f'conteo array {len(array) - 1}')
+        print(f'conteo sin salto {len(sin_salto)}')
+        indice = sin_salto.index("FN:1")
+        print(f'datos: indice {indice} nombre: {sin_salto[indice]}')
+    except:
+        print('no found')
+
+if __name__ == '__main__':
+    run()
+
+
+===================================================
+def run():
+
+    data = []
+    url_archive = '00001.vcf'
+    reading_method = 'r'
+    dictionary = {}
+    bd = []
+    count = 0
+
+    with open(url_archive, reading_method, encoding="utf-8") as fe:
+
+        list_data = fe.readlines()
+        list_data.rstrip('\n')
+
+        for i in range(0, len(list_data)):
+
+            data.append(list_data[i].rstrip('\n'))
+
+            dato_puto_coma = data[i].split(';', 1)
+
+            dato = data[i].split(':')
+            try:
+
+                dictionary = {dato[0] : dato[1]}
+                # dictionary[dato[0]] = dato[1]
+                # dictionary[count] = data
+
+                print(dictionary)
+                # print(rr)
+
+            except:
+                print('error perro')
+                break
+
+
+            if data[i] == 'END:VCARD':
+                count += 1
+                # dictionary = dictionarys.copy()
+                bd.append(dictionary)
+                print(count)
+                print('encontrado\n')
+                print(bd)
+                continue
+
+
+    try:
+        print(f'dato {data[25857]}')
+        print(f'conteo list_data {len(list_data) - 1}')
+        print(f'conteo sin salto {len(data)}')
+        indice = data.index("FN:1")
+        print(f'datos: indice {indice} nombre: {data[indice]}')
+    except:
+        print('no found')
+
+if __name__ == '__main__':
+    run()
+
+===================================
+import json
+
+def run():
+
+    data = []
+    url_archive = '00001.vcf'
+    reading_method = 'r'
+    dictionary = {}
+    dictionary_update = {}
+    dictionarys = dict()
+    bd = []
+    jsonn = []
+    count = 0
+    count2 = 0
+
+    with open(url_archive, reading_method, encoding="utf-8") as fe:
+
+        list_data = fe.readlines()
+
+        max_index = len(list_data) - 1
+
+        print(max_index)
+
+        while count <= max_index:
+            datos = list_data[count].rstrip('\n')
+            bd.append(datos)
+            # print(datos)
+            count = count + 1
+
+        count = 0
+        max_index_two = len(bd) - 1
+
+        while count <=max_index_two:
+            dato_solo = bd[count]
+            search_dos_puntos = ':' in dato_solo
+            # search_punto_coma = ';' in dato_solo
+            search_punto_coma = dato_solo.count(';')
+
+            if search_punto_coma == 1:
+                dato_punto_coma = bd[count].split(';', 1)
+            if search_dos_puntos:
+                dato_dos_puntos = bd[count].split(':')
+
+            try:
+                # if search_dos_puntos:
+                #     dictionarys[dato_dos_puntos[0]] = dato_dos_puntos[1]
+                # if search_punto_coma == 1:
+                #     dictionarys[dato_punto_coma[0]] = dato_punto_coma[1]
+                if search_dos_puntos:
+                    dictionary = {dato_dos_puntos[0] : dato_dos_puntos[1]}
+                if search_punto_coma == 1:
+                    dictionary = {dato_punto_coma[0] : dato_punto_coma[1]}
+                
+                dictionary_update.update(dictionary)
+
+                # print(dictionarys)
+                # print(dictionary_update)
+                if dato_solo == 'END:VCARD':
+                    # jsonn.append(dictionary_update)
+                    count2 += 1
+                    dictionarys[str(count2)] = dictionary_update
+                    dictionary_update = {}
+                    dictionary = {}
+                    # print(jsonn)
+                    continue
+            except:
+                print('la cagaste')
+            finally:
+                count = count + 1
+                if count == 25857:
+                    print('hola')
+                    
+        dotocos = json.dumps(dictionarys)
+        print(dotocos)
+
+        # for i in range(0, len(list_data)):
+
+        #     data.append(list_data[i].rstrip('\n'))
+
+        #     dato_puto_coma = data[i].split(';', 1)
+
+        #     dato = data[i].split(':')
+        #     try:
+
+        #         dictionary = {dato[0] : dato[1]}
+        #         # dictionary[dato[0]] = dato[1]
+        #         # dictionary[count] = data
+
+        #         print(dictionary)
+        #         # print(rr)
+
+        #     except:
+        #         print('error perro')
+        #         break
+
+
+        #     if data[i] == 'END:VCARD':
+        #         count += 1
+        #         # dictionary = dictionarys.copy()
+        #         bd.append(dictionary)
+        #         print(count)
+        #         print('encontrado\n')
+        #         print(bd)
+        #         continue
+        with open('datos_sin_saltos.json', 'w') as f:
+                json.dump(dotocos, f)
+
+        try:
+            with open('datos_sin_saltos.json', 'w') as f:
+                json.dump(dictionarys, f)
+        except:
+            print('no se pudo escribir el archivo')
+    try:
+        print(f'dato {data[25857]}')
+        print(f'conteo list_data {len(list_data) - 1}')
+        print(f'conteo sin salto {len(data)}')
+        indice = data.index("FN:1")
+        print(f'datos: indice {indice} nombre: {data[indice]}')
+    except:
+        print('no found')
+
+if __name__ == '__main__':
+    run()
