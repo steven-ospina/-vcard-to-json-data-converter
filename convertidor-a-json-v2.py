@@ -1,21 +1,22 @@
 import json
 
-def run():
 
-    url_archive = '00001.vcf'
-    reading_method = 'r'
+def run():
+    
     dictionary = {}
     dictionary_update = {}
-    dictionarys_father = dict()
     data_clean = []
     count1 = 1
-    count2 = 0
     count3 = 0
-    seguimiento = 0
-    two_ponits = ['']
+    count4 = 0
+    multi_data = []
     bandera = ''
-    tel_list = []
-    swicht = False
+    count2 = 0
+    url_archive = '00001.vcf'
+    reading_method = 'r'
+    dictionarys_father = dict()
+    two_points = ['']
+    seguimiento = 0
 
 
     with open(url_archive, reading_method, encoding="utf-8") as fe:
@@ -30,73 +31,96 @@ def run():
             data_without_new_line = list_data[i].rstrip('\n')
             data_clean.append(data_without_new_line)
 
-        max_index_two = len(data_clean)
+        max_index_two = len(data_clean) - 1
 
-        for i in range(max_index_two):
-            print(data_clean[i])
-            if swicht == True:
-                swicht = False
-                continue
+        while count4 <= max_index_two:
+            # print(data_clean[count4])
 
             bandera = True
 
-            only_one_data = data_clean[i]
+            only_one_data = data_clean[count4]
 
             search_by_two_points = ':' in only_one_data
             search_by_semicolons = only_one_data.count(';')
 
             if search_by_semicolons == 1:
-                semicolons = data_clean[i].split(';', 1)
+                semicolons = data_clean[count4].split(';', 1)
             if search_by_two_points:
-                two_ponits = data_clean[i].split(':')
-            
-            # try:
-            #     print(dictionary_update['TEL:'])
-            #     if dictionary_update['TEL:']:
-            #         continue
-            # except:
-            #     print('')
+                two_points = data_clean[count4].split(':')
 
             try:
-                if two_ponits[0] == 'TEL;CELL' or two_ponits[0] == 'TEL;WORK':
-                    seguimiento = i
+                if two_points[0] == 'TEL;CELL' or two_points[0] == 'TEL;WORK':
+                    seguimiento = count4
 
                     while bandera:
-                        # print(i)
 
                         count3 = count3 + 1
 
-                        search = data_clean[i].split(':')
+                        search = data_clean[count4].split(':')
 
-                        dict_tel = {f'{search[0]}{count3}' : search[1]}
+                        dict_tel = {f'{search[0]}-{count3}' : search[1]}
                         
-                        tel_list.append(dict_tel)
+                        multi_data.append(dict_tel)
 
-                        i = i + count1
+                        count4 = count4 + count1
 
-                        search = data_clean[i].split(':')
+                        search = data_clean[count4].split(':')
 
-                        if search[0] == 'TEL;CELL' or search[0] == 'TEL;CELL':
-                            print('hola')
+                        if search[0] == 'TEL;CELL' or search[0] == 'TEL;WORK':
+                            pass
                         else:
-                            print(data_clean[i])
                             # print(seguimiento)
-                            dictionary = {'TEL:' : tel_list}
+                            dictionary = {'TEL:' : multi_data}
                             dictionary_update.update(dictionary)
                             bandera = False
-                            seguimiento = i
-                            swicht = True
                             dictionary = {}
-                            tel_list = []
+                            multi_data = []
+                            count4 = count4
+                            count3 = 0
+                            continue
+                            
+                    continue
+            except Exception as error:
+                print('error en buscar telefono', error)
+
+            try:
+                if two_points[0] == 'EMAIL;X-INTERNET' or two_points[0] == 'EMAIL;HOME' or two_points[0] == 'EMAIL;WORK':
+                    seguimiento = count4
+
+                    while bandera:
+
+                        count3 = count3 + 1
+
+                        search = data_clean[count4].split(':')
+
+                        dict_tel = {f'{search[0]}-{count3}' : search[1]}
+                        
+                        multi_data.append(dict_tel)
+
+                        count4 = count4 + count1
+
+                        search = data_clean[count4].split(':')
+
+                        email = search[0].split(';')
+
+                        if email[0] != 'EMAIL':
+                            # print(seguimiento)
+                            dictionary = {'EMAILS:' : multi_data}
+                            dictionary_update.update(dictionary)
+                            bandera = False
+                            dictionary = {}
+                            multi_data = []
+                            count4 = count4
+                            count3 = 0
                             continue
                     continue
-            except:
-                print('error en buscar telefono')
+            except Exception as error:
+                print('error en buscar telefono', error)
 
             try:
 
                 if search_by_two_points:
-                    dictionary = {two_ponits[0] : two_ponits[1]}
+                    dictionary = {two_points[0] : two_points[1]}
                 elif search_by_semicolons == 1:
                     dictionary = {semicolons[0] : semicolons[1]}
 
@@ -109,18 +133,19 @@ def run():
                     dictionary_update = {}
                     dictionary = {}
                     continue
-            except:
-                print('error')
+            except Exception as err:
+                print('error', err)
             finally:
-                if i == 25857:
-                    print('hola')
+                count4 = count4 + 1
+                if count4 == 25857:
+                    # print('hola')
+                    pass
 
-
-        try:
-            with open('data_vcard.json', 'w') as f:
-                json.dump(dictionarys_father, f)
-        except:
-            print('no se pudo escribir el archivo')
+    try:
+        with open('data_vcard.json', 'w') as f:
+            json.dump(dictionarys_father, f)
+    except:
+        print('no se pudo escribir el archivo')
 
 
 if __name__ == '__main__':
