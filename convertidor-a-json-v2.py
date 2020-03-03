@@ -3,20 +3,20 @@ import json
 
 def run():
     
+    dictionarys_father = dict()
     dictionary = {}
     dictionary_update = {}
     data_clean = []
+    multiple_data = []
+    two_points = ['']
     count1 = 1
+    count2 = 0
     count3 = 0
     count4 = 0
-    multi_data = []
-    bandera = ''
-    count2 = 0
+    flag = ''
     url_archive = '00001.vcf'
     reading_method = 'r'
-    dictionarys_father = dict()
-    two_points = ['']
-    seguimiento = 0
+    number_photo = 0
 
 
     with open(url_archive, reading_method, encoding="utf-8") as fe:
@@ -34,9 +34,8 @@ def run():
         max_index_two = len(data_clean) - 1
 
         while count4 <= max_index_two:
-            # print(data_clean[count4])
 
-            bandera = True
+            flag = True
 
             only_one_data = data_clean[count4]
 
@@ -50,9 +49,8 @@ def run():
 
             try:
                 if two_points[0] == 'TEL;CELL' or two_points[0] == 'TEL;WORK':
-                    seguimiento = count4
 
-                    while bandera:
+                    while flag:
 
                         count3 = count3 + 1
 
@@ -60,7 +58,7 @@ def run():
 
                         dict_tel = {f'{search[0]}-{count3}' : search[1]}
                         
-                        multi_data.append(dict_tel)
+                        multiple_data.append(dict_tel)
 
                         count4 = count4 + count1
 
@@ -69,12 +67,11 @@ def run():
                         if search[0] == 'TEL;CELL' or search[0] == 'TEL;WORK':
                             pass
                         else:
-                            # print(seguimiento)
-                            dictionary = {'TEL:' : multi_data}
+                            dictionary = {'TEL:' : multiple_data}
                             dictionary_update.update(dictionary)
-                            bandera = False
+                            flag = False
                             dictionary = {}
-                            multi_data = []
+                            multiple_data = []
                             count4 = count4
                             count3 = 0
                             continue
@@ -85,9 +82,8 @@ def run():
 
             try:
                 if two_points[0] == 'EMAIL;X-INTERNET' or two_points[0] == 'EMAIL;HOME' or two_points[0] == 'EMAIL;WORK':
-                    seguimiento = count4
 
-                    while bandera:
+                    while flag:
 
                         count3 = count3 + 1
 
@@ -95,7 +91,7 @@ def run():
 
                         dict_tel = {f'{search[0]}-{count3}' : search[1]}
                         
-                        multi_data.append(dict_tel)
+                        multiple_data.append(dict_tel)
 
                         count4 = count4 + count1
 
@@ -104,18 +100,49 @@ def run():
                         email = search[0].split(';')
 
                         if email[0] != 'EMAIL':
-                            # print(seguimiento)
-                            dictionary = {'EMAILS:' : multi_data}
+                            dictionary = {'EMAILS:' : multiple_data}
                             dictionary_update.update(dictionary)
-                            bandera = False
+                            flag = False
                             dictionary = {}
-                            multi_data = []
+                            multiple_data = []
                             count4 = count4
                             count3 = 0
                             continue
                     continue
             except Exception as error:
                 print('error en buscar telefono', error)
+
+            try:
+                if two_points[0] == 'PHOTO;ENCODING=BASE64;JPEG':
+
+                    data_base = two_points[1]
+
+                    while flag:
+
+                        count4 = count4 + count1
+
+                        search = data_clean[count4]
+
+                        # if search == ' nBQjZH//Z':
+                        #     print('t')
+
+                        if search == '':
+                            number_photo = number_photo + 1
+                            dictionary_photo = {f'{number_photo}-{two_points[0]}' : data_base}
+                            dictionary_update.update(dictionary_photo)
+                            search = ''
+                            flag = False
+                            dictionary = {}
+                            count4 = count4
+                            two_points[0] = ''
+                            dictionary_photo = {}
+                            continue
+                        else:
+                            data_base += search.strip()
+
+                    continue
+            except Exception as error:
+                print('error en PHOTO', error)
 
             try:
 
@@ -126,20 +153,17 @@ def run():
 
                 dictionary_update.update(dictionary)
 
-                # print(dictionary_update)
                 if only_one_data == 'END:VCARD':
                     count2 += 1
                     dictionarys_father[str(count2)] = dictionary_update
                     dictionary_update = {}
                     dictionary = {}
+                    number_photo = 0
                     continue
             except Exception as err:
                 print('error', err)
             finally:
                 count4 = count4 + 1
-                if count4 == 25857:
-                    # print('hola')
-                    pass
 
     try:
         with open('data_vcard.json', 'w') as f:
